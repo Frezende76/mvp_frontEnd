@@ -1,0 +1,133 @@
+/* Reset Básico */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: darkgreen;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.container h3{
+    text-align: center;
+    color: #fff;
+    margin-top: 20px;
+}
+
+.banner_cadastro {
+    width: 100%; 
+    margin-bottom: 20px;
+}
+
+.consulta{
+    text-align: center;
+}
+
+h1, h2 {
+    margin-bottom: 15px;
+}
+
+div h2 {
+    text-align: center;
+    color: #fff;
+}
+
+#userform {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    color: #fff;
+}
+
+input, button {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    cursor: pointer;
+    background-color: grey;
+    color: black;
+    border: none;
+}
+
+button:hover {
+    background-color: darkgrey;
+}
+
+/* Responsividade da tabela */
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: grey;
+    color: white;
+    text-align: center;
+}
+
+td button {
+    padding: 5px 10px;
+    margin: 2px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+td button:first-child {
+    background-color: orange;
+}
+
+td button:last-child {
+    background-color: red;
+    color: white;
+}
+
+td button:hover {
+    opacity: 0.8;
+}
+
+/* Estilização para telas menores */
+@media (max-width: 600px) {
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+}
