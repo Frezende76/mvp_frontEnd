@@ -71,12 +71,6 @@ cd mvp_frontEnd
 
 ---
 
-## 📌 8. Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-## 📌 9. Contato
+## 📌 8. Contato
 
 Desenvolvido por **Fabricio Rezende**. Para dúvidas ou sugestões, entre em contato.
