@@ -5,69 +5,53 @@ document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("userform");
     const URL_API = "http://127.0.0.1:5000/usuarios";
     const userTable = document.getElementById("userTable");
-    const btnConsultar = document.getElementById("btnConsultar");
     const inputNomeUsuario = document.getElementById("nome_usuario");
 
-    // Função para verificar se o usuário com os mesmos dados já existe
     async function verificarUsuarioExistente(usuario) {
         return fetch(`${URL_API}/verificar`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(usuario)
         })
         .then(response => response.json())
-        .then(data => {
-            if (data.usuarioExistente) {
-                return true;  // Usuário já existe
-            } else {
-                return false;  // Nenhum usuário encontrado
-            }
-        })
+        .then(data => data.usuarioExistente)
         .catch(error => {
             console.error("Erro na requisição:", error);
             return false;
         });
     }
-    // Evento de submit do formulário
+
     form.addEventListener("submit", function(event) {
         event.preventDefault();
 
-        // Criação do objeto usuario com os valores do formulário
         const usuario = {
-            nome: document.getElementById("nome").value,
-            endereco: document.getElementById("endereco").value,
-            email: document.getElementById("email").value,
-            telefone: document.getElementById("telefone").value
+            nome: document.getElementById("nome").value.trim(),
+            endereco: document.getElementById("endereco").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            telefone: document.getElementById("telefone").value.trim()
         };
 
-        // Validação simples de campos vazios
         if (!usuario.nome || !usuario.endereco || !usuario.email || !usuario.telefone) {
             alert("Todos os campos são obrigatórios!");
             return;
         }
 
-        // Verifica se o usuário já existe antes de enviar o cadastro
         verificarUsuarioExistente(usuario).then(usuarioExistente => {
             if (usuarioExistente) {
                 alert("Usuário com os mesmos dados já está cadastrado.");
-                return; // Não continua com o cadastro
+                return;
             }
 
-            // Envia os dados para o cadastro do novo usuário
             fetch(`${URL_API}/cadastrar`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(usuario)
             })
-            .then(async response => {
-                if (!response.ok) {
-                    throw new Error("Erro ao cadastrar usuário");
-                }
+            .then(response => {
+                if (!response.ok) throw new Error("Erro ao cadastrar usuário");
                 return response.json();
             })
-            .then(data => {
+            .then(() => {
                 alert("Usuário cadastrado com sucesso!");
                 form.reset();
                 atualizarTabela();
@@ -76,14 +60,15 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    function atualizarTabela() {
-        fetch(`${URL_API}/todos`, {  // A URL foi alterada para a rota de busca de usuários
-            method: "GET",  // Agora estamos fazendo um GET
-            headers: { "Content-Type": "application/json" }
-        })
+    async function atualizarTabela(nome = "") {
+        let url = `${URL_API}/todos`;
+        if (nome.trim() !== "") {
+            url += `?nome=${encodeURIComponent(nome)}`;
+        }
+
+        fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } })
         .then(response => response.json())
         .then(data => {
-            // Verificando se a resposta contém a chave de dados de usuários
             if (!data || !Array.isArray(data) || data.length === 0) {
                 userTable.innerHTML = "<tr><td colspan='5' style='text-align: center; color: #fff'>Nenhum usuário encontrado.</td></tr>";
                 return;
@@ -104,8 +89,55 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => alert("Erro ao consultar usuários: " + error.message));
     }
 
+    async function editarUsuario(id) {
+        const usuarioNome = prompt("Digite o novo nome:").trim();
+        const usuarioEndereco = prompt("Digite o novo endereço:").trim();
+        const usuarioEmail = prompt("Digite o novo e-mail:").trim();
+        const usuarioTelefone = prompt("Digite o novo telefone:").trim();
+
+        if (!usuarioNome || !usuarioEndereco || !usuarioEmail || !usuarioTelefone) {
+            alert("Todos os campos são obrigatórios para editar o usuário!");
+            return;
+        }
+
+        const usuarioEditado = { nome: usuarioNome, endereco: usuarioEndereco, email: usuarioEmail, telefone: usuarioTelefone };
+
+        fetch(`${URL_API}/editar/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(usuarioEditado)
+        })
+        .then(response => response.json())
+        .then(() => {
+            alert("Usuário editado com sucesso!");
+            atualizarTabela();
+        })
+        .catch(error => alert("Erro ao editar o usuário: " + error.message));
+    }
+
+    async function deletarUsuario(id) {
+        if (confirm("Tem certeza que deseja deletar esse usuário?")) {
+            fetch(`${URL_API}/deletar/${id}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.json())
+            .then(() => {
+                alert("Usuário deletado com sucesso!");
+                atualizarTabela();
+            })
+            .catch(error => alert("Erro ao deletar o usuário: " + error.message));
+        }
+    }
+
+    window.editarUsuario = editarUsuario;
+    window.deletarUsuario = deletarUsuario;
+
+    inputNomeUsuario.addEventListener("input", function() {
+        atualizarTabela(inputNomeUsuario.value);
+    });
+
     atualizarTabela();
 });
- 
 
     
