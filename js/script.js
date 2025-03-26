@@ -168,6 +168,9 @@ document.addEventListener("DOMContentLoaded", function() {
     if (nomeBuscado) {
         inputNomeUsuario.value = nomeBuscado;
         atualizarTabela(nomeBuscado);
+    } else {
+        //Se não houver nome na URL, mostra todos os usuários
+        atualizarTabela();
     }
 });
 
