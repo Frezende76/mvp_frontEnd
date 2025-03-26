@@ -21,6 +21,18 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    async function buscarUsuario(id) {
+        return fetch(`${URL_API}/buscar/${id}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        })
+        .then(response => response.json())
+        .catch(error => {
+            console.error("Erro ao buscar usuário:", error);
+            return null;
+        });
+    }
+
     form.addEventListener("submit", function(event) {
         event.preventDefault();
 
@@ -90,10 +102,16 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     async function editarUsuario(id) {
-        const usuarioNome = prompt("Digite o novo nome:").trim();
-        const usuarioEndereco = prompt("Digite o novo endereço:").trim();
-        const usuarioEmail = prompt("Digite o novo e-mail:").trim();
-        const usuarioTelefone = prompt("Digite o novo telefone:").trim();
+        const usuario = await buscarUsuario(id);
+        if (!usuario) {
+            alert("Usuário não encontrado");
+            return;
+        }
+
+        const usuarioNome = prompt("Digite o novo nome:", usuario.nome).trim();
+        const usuarioEndereco = prompt("Digite o novo endereço:", usuario.endereco).trim();
+        const usuarioEmail = prompt("Digite o novo e-mail:", usuario.email).trim();
+        const usuarioTelefone = prompt("Digite o novo telefone:", usuario.telefone).trim();
 
         if (!usuarioNome || !usuarioEndereco || !usuarioEmail || !usuarioTelefone) {
             alert("Todos os campos são obrigatórios para editar o usuário!");
@@ -134,10 +152,23 @@ document.addEventListener("DOMContentLoaded", function() {
     window.deletarUsuario = deletarUsuario;
 
     inputNomeUsuario.addEventListener("input", function() {
-        atualizarTabela(inputNomeUsuario.value);
+        const nome = inputNomeUsuario.value.trim();
+    
+        // Atualiza a URL sem recarregar a página
+        const newUrl = nome ? `?nome=${encodeURIComponent(nome)}` : window.location.pathname;
+        window.history.pushState({}, "", newUrl);
+
+        // Chama a função para atualizar a tabela
+        atualizarTabela(nome);
     });
 
-    atualizarTabela();
+    // Captura o nome da URL ao carregar a página e faz a busca automática
+    const params = new URLSearchParams(window.location.search);
+    const nomeBuscado = params.get("nome") || "";
+    if (nomeBuscado) {
+        inputNomeUsuario.value = nomeBuscado;
+        atualizarTabela(nomeBuscado);
+    }
 });
 
     
